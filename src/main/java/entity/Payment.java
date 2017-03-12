@@ -10,7 +10,7 @@ import java.io.ObjectOutput;
 import java.io.Serializable;
 
 @SerializeWith(Payment.PaymentExternalizer.class)
-public class Payment implements Serializable{
+public class Payment implements Serializable {
 
     private long bankId;
     private long from;

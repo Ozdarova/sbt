@@ -1,0 +1,5 @@
+BankConfig:
+  InfoConfig:
+    id: 1
+    name : bank_one
+

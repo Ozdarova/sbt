@@ -1,24 +1,20 @@
 package service.cache.impl;
 
-import entity.Account;
+import entity.BankInfo;
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
-import service.cache.AccountProvider;
+import service.cache.BankInfoProvider;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+public class BankInfoProviderImpl implements BankInfoProvider {
+    final private Cache<Long, BankInfo> cache;
 
-public class AccountProviderImpl implements AccountProvider {
-    final private Cache<Long, Account> cache;
-
-    public AccountProviderImpl() {
+    public BankInfoProviderImpl() {
         GlobalConfigurationBuilder global = GlobalConfigurationBuilder.defaultClusteredBuilder();
-        global.transport().clusterName("AccountService");
+        global.transport().clusterName("BankInfoService");
 
         ConfigurationBuilder config = new ConfigurationBuilder();
         config.clustering().cacheMode(CacheMode.DIST_SYNC);
@@ -28,23 +24,16 @@ public class AccountProviderImpl implements AccountProvider {
     }
 
     @Override
-    public Account getById(long id) {
+    public BankInfo getById(long id) {
         return cache.get(id);
     }
 
     @Override
-    public List<Account> getAll() {
-        return cache.size() != 0
-                ? cache.values().stream().collect(Collectors.toList())
-                : new ArrayList<>() ;
-    }
-
-    @Override
-    public void put(Account account) {
-        if (!cache.containsKey(account.getId())) {
-            cache.put(account.getId(), account);
+    public void put(BankInfo bankInfo) {
+        if (!cache.containsKey(bankInfo.getId())) {
+            cache.put(bankInfo.getId(), bankInfo);
         } else {
-            cache.replace(account.getId(), account);
+            cache.replace(bankInfo.getId(), bankInfo);
         }
     }
 }
