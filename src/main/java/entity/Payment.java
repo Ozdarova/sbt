@@ -12,16 +12,22 @@ import java.io.Serializable;
 @SerializeWith(Payment.PaymentExternalizer.class)
 public class Payment implements Serializable {
 
+    private long id;
     private long bankId;
     private long from;
     private long to;
     private double value;
 
-    protected Payment(long bankId, long from, long to, double value) {
+    protected Payment(long id, long bankId, long from, long to, double value) {
+        this.id = id;
         this.bankId = bankId;
         this.from = from;
         this.to = to;
         this.value = value;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public long getBankId() {
@@ -44,6 +50,7 @@ public class Payment implements Serializable {
 
         @Override
         public void writeObject(ObjectOutput objectOutput, Payment payment) throws IOException {
+            objectOutput.writeLong(payment.getId());
             objectOutput.writeLong(payment.getBankId());
             objectOutput.writeLong(payment.getFrom());
             objectOutput.writeLong(payment.getTo());
@@ -52,33 +59,27 @@ public class Payment implements Serializable {
 
         @Override
         public Payment readObject(ObjectInput input) throws IOException, ClassNotFoundException {
+            long id = input.readLong();
             long bankId = input.readLong();
             long from = input.readLong();
             long to = input.readLong();
             double value = input.readDouble();
-            return new Payment(bankId, from, to, value);
+            return new Payment(id, bankId, from, to, value);
         }
 
-    }
-
-    public static class PaymentGrouper implements Grouper<String> {
-
-        @Override
-        public String computeGroup(String key, String group) {
-            return key.split(",")[0].trim();
-        }
-
-        @Override
-        public Class<String> getKeyType() {
-            return String.class;
-        }
     }
 
     public static class Builder {
+        private long id;
         private long bankId;
         private long from;
         private long to;
         double value;
+
+        public Builder setId(long id) {
+            this.id = id;
+            return this;
+        }
 
         public Builder setBankId(long bankId) {
             this.bankId = bankId;
@@ -101,7 +102,7 @@ public class Payment implements Serializable {
         }
 
         public Payment build() {
-            return new Payment(bankId, from, to, value);
+            return new Payment(id, bankId, from, to, value);
         }
     }
 

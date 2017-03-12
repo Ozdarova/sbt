@@ -11,10 +11,11 @@ public abstract class PaymentCacheListener {
     @CacheEntryCreated
     public void entryCreated(CacheEntryCreatedEvent<Long, Payment> event) {
         if (!event.isOriginLocal()) {
-            System.out.printf("-- Entry for %s modified by another node in the cluster\n", event.getKey());
+            //@TODO: check if in local bank group
+            passPayment(event.getValue());
         }
     }
 
-    abstract void passPayment(Payment payment);
+    public abstract void passPayment(Payment payment);
 
 }

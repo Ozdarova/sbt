@@ -1,6 +1,5 @@
 package service.cache.impl;
 
-import entity.Correspondent;
 import entity.Payment;
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.CacheMode;
@@ -9,17 +8,20 @@ import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import service.cache.PaymentProvider;
+import service.cache.listeners.PaymentCacheListener;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class PaymentProviderImpl implements PaymentProvider {
+public abstract class PaymentProviderImpl implements PaymentProvider {
     final private Cache<Long, Payment> cache;
 
     public PaymentProviderImpl() {
         GlobalConfigurationBuilder global = GlobalConfigurationBuilder.defaultClusteredBuilder();
         global
                 .globalJmxStatistics().allowDuplicateDomains(true)
-                .transport().clusterName("CorrespondentService");
+                .transport().clusterName("PaymentService");
 
 
         ConfigurationBuilder config = new ConfigurationBuilder();
@@ -27,15 +29,35 @@ public class PaymentProviderImpl implements PaymentProvider {
 
         EmbeddedCacheManager cacheManager = new DefaultCacheManager(global.build(), config.build());
         cache = cacheManager.getCache();
+        cache.addListener(new PaymentCacheListener() {
+            public void passPayment(Payment payment) {
+                this.passPayment(payment);
+            }
+        });
     }
+
+    public abstract void passPayment(Payment payment);
 
     @Override
     public List<Payment> getAll() {
-        return null;
+        return cache.size() != 0
+                ? cache.values().stream().collect(Collectors.toList())
+                : new ArrayList<>();
     }
 
     @Override
     public void put(Payment payment) {
+        if (!cache.containsKey(payment.getId())) {
+            cache.put(payment.getId(), payment);
+        } else {
+            cache.replace(payment.getId(), payment);
+        }
+    }
 
+    @Override
+    public void remove(Payment payment) {
+        if ( cache.containsKey(payment.getId()) ) {
+            cache.remove(payment);
+        }
     }
 }
