@@ -1,5 +1,10 @@
-BankConfig:
-  InfoConfig:
-    id: 1
-    name : bank_one
+info:
+    { id: 1, name: bank_one }
 
+accounts:
+  - { id: 1, balance: 100 }
+  - { id: 2, balance: 200 }
+  - { id: 3, balance: 500 }
+
+correspondents:
+  - { accountId: 3, bankId: 2, correspondentAccountId: 10 }

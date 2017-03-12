@@ -3,5 +3,6 @@ package service.cache;
 import entity.Correspondent;
 
 public interface CorrespondentProvider {
-    Correspondent getByBankId(long bankId);
+    Correspondent getByAccountId(long accountId);
+    void put(Correspondent correspondent);
 }

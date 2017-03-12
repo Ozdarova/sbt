@@ -4,9 +4,7 @@ public class AccountConfig {
     private String id;
     private String balance;
 
-    public AccountConfig(String id, String balance) {
-        this.id = id;
-        this.balance = balance;
+    public AccountConfig(){
     }
 
     public String getId() {

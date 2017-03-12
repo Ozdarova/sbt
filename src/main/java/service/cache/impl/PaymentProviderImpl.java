@@ -1,22 +1,25 @@
 package service.cache.impl;
 
-import entity.BankInfo;
+import entity.Correspondent;
+import entity.Payment;
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
-import service.cache.BankInfoProvider;
+import service.cache.PaymentProvider;
 
-public class BankInfoProviderImpl implements BankInfoProvider {
-    final private Cache<Long, BankInfo> cache;
+import java.util.List;
 
-    public BankInfoProviderImpl() {
+public class PaymentProviderImpl implements PaymentProvider {
+    final private Cache<Long, Payment> cache;
+
+    public PaymentProviderImpl() {
         GlobalConfigurationBuilder global = GlobalConfigurationBuilder.defaultClusteredBuilder();
         global
                 .globalJmxStatistics().allowDuplicateDomains(true)
-                .transport().clusterName("BankInfoService");
+                .transport().clusterName("CorrespondentService");
 
 
         ConfigurationBuilder config = new ConfigurationBuilder();
@@ -27,16 +30,12 @@ public class BankInfoProviderImpl implements BankInfoProvider {
     }
 
     @Override
-    public BankInfo getById(long id) {
-        return cache.get(id);
+    public List<Payment> getAll() {
+        return null;
     }
 
     @Override
-    public void put(BankInfo bankInfo) {
-        if (!cache.containsKey(bankInfo.getId())) {
-            cache.put(bankInfo.getId(), bankInfo);
-        } else {
-            cache.replace(bankInfo.getId(), bankInfo);
-        }
+    public void put(Payment payment) {
+
     }
 }

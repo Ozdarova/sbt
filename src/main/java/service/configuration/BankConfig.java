@@ -3,37 +3,35 @@ package service.configuration;
 import java.util.List;
 
 public class BankConfig {
-    private InfoConfig infoConfig;
-    private List<AccountConfig> accountConfigList;
-    private List<CorrespondentConfig> correspondentConfigList;
 
-    public BankConfig(InfoConfig infoConfig, List<AccountConfig> accountConfigList, List<CorrespondentConfig> correspondentConfigList) {
-        this.infoConfig = infoConfig;
-        this.accountConfigList = accountConfigList;
-        this.correspondentConfigList = correspondentConfigList;
+    private InfoConfig info;
+    private List<AccountConfig> accounts;
+    private List<CorrespondentConfig> correspondents;
+
+    public BankConfig() {
     }
 
-    public InfoConfig getInfoConfig() {
-        return infoConfig;
+    public InfoConfig getInfo() {
+        return info;
     }
 
-    public void setInfoConfig(InfoConfig infoConfig) {
-        this.infoConfig = infoConfig;
+    public void setInfo(InfoConfig info) {
+        this.info = info;
     }
 
-    public List<AccountConfig> getAccountConfigList() {
-        return accountConfigList;
+    public List<AccountConfig> getAccounts() {
+        return accounts;
     }
 
-    public void setAccountConfigList(List<AccountConfig> accountConfigList) {
-        this.accountConfigList = accountConfigList;
+    public void setAccounts(List<AccountConfig> accounts) {
+        this.accounts = accounts;
     }
 
-    public List<CorrespondentConfig> getCorrespondentConfigList() {
-        return correspondentConfigList;
+    public List<CorrespondentConfig> getCorrespondents() {
+        return correspondents;
     }
 
-    public void setCorrespondentConfigList(List<CorrespondentConfig> correspondentConfigList) {
-        this.correspondentConfigList = correspondentConfigList;
+    public void setCorrespondents(List<CorrespondentConfig> correspondents) {
+        this.correspondents = correspondents;
     }
 }

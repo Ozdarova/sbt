@@ -61,7 +61,7 @@ public class Payment implements Serializable {
 
     }
 
-    public static class LocationGrouper implements Grouper<String> {
+    public static class PaymentGrouper implements Grouper<String> {
 
         @Override
         public String computeGroup(String key, String group) {

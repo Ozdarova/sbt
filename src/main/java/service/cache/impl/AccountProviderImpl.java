@@ -1,6 +1,7 @@
 package service.cache.impl;
 
 import entity.Account;
+import org.infinispan.AdvancedCache;
 import org.infinispan.Cache;
 import org.infinispan.configuration.cache.CacheMode;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
@@ -11,6 +12,8 @@ import service.cache.AccountProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class AccountProviderImpl implements AccountProvider {
@@ -18,13 +21,16 @@ public class AccountProviderImpl implements AccountProvider {
 
     public AccountProviderImpl() {
         GlobalConfigurationBuilder global = GlobalConfigurationBuilder.defaultClusteredBuilder();
-        global.transport().clusterName("AccountService");
+        global
+                .globalJmxStatistics().allowDuplicateDomains(true)
+                .transport().clusterName("AccountService");
 
         ConfigurationBuilder config = new ConfigurationBuilder();
         config.clustering().cacheMode(CacheMode.DIST_SYNC);
 
         EmbeddedCacheManager cacheManager = new DefaultCacheManager(global.build(), config.build());
         cache = cacheManager.getCache();
+
     }
 
     @Override
@@ -36,7 +42,7 @@ public class AccountProviderImpl implements AccountProvider {
     public List<Account> getAll() {
         return cache.size() != 0
                 ? cache.values().stream().collect(Collectors.toList())
-                : new ArrayList<>() ;
+                : new ArrayList<>();
     }
 
     @Override
