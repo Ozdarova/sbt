@@ -7,14 +7,19 @@ import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.configuration.global.GlobalConfigurationBuilder;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import service.cache.PaymentProvider;
 import service.cache.listeners.PaymentCacheListener;
 
+import javax.transaction.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class PaymentProviderImpl implements PaymentProvider {
+    final private Logger logger = LoggerFactory.getLogger(PaymentProvider.class);
+
     final private Cache<Long, Payment> cache;
 
     public PaymentProviderImpl() {
@@ -47,17 +52,34 @@ public abstract class PaymentProviderImpl implements PaymentProvider {
 
     @Override
     public void put(Payment payment) {
-        if (!cache.containsKey(payment.getId())) {
-            cache.put(payment.getId(), payment);
-        } else {
-            cache.replace(payment.getId(), payment);
+        TransactionManager manager = cache.getAdvancedCache().getTransactionManager();
+        try {
+            manager.begin();
+
+            if (!cache.containsKey(payment.getId())) {
+                cache.put(payment.getId(), payment);
+            } else {
+                cache.replace(payment.getId(), payment);
+            }
+
+            manager.commit();
+        } catch (Exception e) {
+            logger.error("Error inserting Payment: " + e.getMessage(), e);
         }
+
     }
 
     @Override
     public void remove(Payment payment) {
         if ( cache.containsKey(payment.getId()) ) {
-            cache.remove(payment);
+            TransactionManager manager = cache.getAdvancedCache().getTransactionManager();
+            try {
+                manager.begin();
+                cache.remove(payment);
+                manager.commit();
+            } catch (Exception e) {
+                logger.error("Error removing Payment: " + e.getMessage(), e);
+            }
         }
     }
 }
