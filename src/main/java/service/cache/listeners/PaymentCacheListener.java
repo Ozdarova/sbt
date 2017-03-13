@@ -10,12 +10,13 @@ public abstract class PaymentCacheListener {
 
     @CacheEntryCreated
     public void entryCreated(CacheEntryCreatedEvent<Long, Payment> event) {
-        if (!event.isOriginLocal()) {
-            //@TODO: check if in local bank group
-            passPayment(event.getValue());
-        }
+        Payment payment = event.getValue();
+        if ( isClientPayment(payment) )
+            passPayment(payment);
+
     }
 
+    public abstract boolean isClientPayment(Payment payment);
     public abstract void passPayment(Payment payment);
 
 }

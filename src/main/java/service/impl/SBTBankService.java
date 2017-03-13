@@ -109,6 +109,11 @@ public class SBTBankService implements BankService, Runnable {
     }
 
     @Override
+    public BankInfo getBankInfo() {
+        return this.bankInfo;
+    }
+
+    @Override
     public List<Account> getAccounts() {
         return accountProvider.getAll().stream()
                 .filter((a) -> a.getBankId() == this.bankInfo.getId())

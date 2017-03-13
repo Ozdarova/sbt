@@ -9,6 +9,7 @@ import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import service.BankService;
 import service.cache.PaymentProvider;
 import service.cache.listeners.PaymentCacheListener;
 
@@ -22,7 +23,11 @@ public abstract class PaymentProviderImpl implements PaymentProvider {
 
     final private Cache<Long, Payment> cache;
 
-    public PaymentProviderImpl() {
+    final private BankService client;
+
+    public PaymentProviderImpl(BankService client) {
+        this.client = client;
+
         GlobalConfigurationBuilder global = GlobalConfigurationBuilder.defaultClusteredBuilder();
         global
                 .globalJmxStatistics().allowDuplicateDomains(true)
@@ -34,11 +39,19 @@ public abstract class PaymentProviderImpl implements PaymentProvider {
 
         EmbeddedCacheManager cacheManager = new DefaultCacheManager(global.build(), config.build());
         cache = cacheManager.getCache();
-        cache.addListener(new PaymentCacheListener() {
-            public void passPayment(Payment payment) {
-                this.passPayment(payment);
+
+        PaymentCacheListener listener = new PaymentCacheListener() {
+            @Override
+            public boolean isClientPayment(Payment payment) {
+                return client.getBankInfo().getId() == payment.getBankId();
             }
-        });
+
+            @Override
+            public void passPayment(Payment payment) {
+                client.processPayment(payment);
+            }
+        };
+        cache.addListener(listener);
     }
 
     public abstract void passPayment(Payment payment);
