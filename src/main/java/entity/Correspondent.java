@@ -10,13 +10,13 @@ import java.io.Serializable;
 
 @SerializeWith(Correspondent.CorrespondentExternalizer.class)
 public class Correspondent implements Serializable {
-    private long bankId;
     private long accountId;
+    private long bankId;
     private long correspondentAccountId;
 
-    protected Correspondent(long bankId, long accountId, long correspondantAccountId) {
-        this.bankId = bankId;
+    protected Correspondent(long accountId, long bankId, long correspondantAccountId) {
         this.accountId = accountId;
+        this.bankId = bankId;
         this.correspondentAccountId = correspondantAccountId;
     }
 
@@ -36,24 +36,24 @@ public class Correspondent implements Serializable {
 
         @Override
         public void writeObject(ObjectOutput objectOutput, Correspondent correspondent) throws IOException {
-            objectOutput.writeLong(correspondent.getBankId());
             objectOutput.writeLong(correspondent.getAccountId());
+            objectOutput.writeLong(correspondent.getBankId());
             objectOutput.writeLong(correspondent.getCorrespondentAccountId());
         }
 
         @Override
         public Correspondent readObject(ObjectInput input) throws IOException, ClassNotFoundException {
-            long id = input.readLong();
             long accountId = input.readLong();
+            long bankId = input.readLong();
             long correspondantAccountId = input.readLong();
-            return new Correspondent(id, accountId, correspondantAccountId);
+            return new Correspondent(bankId, accountId, correspondantAccountId);
         }
 
     }
 
     public static class Builder {
-        private long bankId;
         private long accountId;
+        private long bankId;
         private long correspondentAccountId;
 
         public Builder setBankId(long bankId) {
@@ -72,7 +72,7 @@ public class Correspondent implements Serializable {
         }
 
         public Correspondent build() {
-            return new Correspondent(bankId, accountId, correspondentAccountId);
+            return new Correspondent(accountId, bankId, correspondentAccountId);
         }
     }
 }

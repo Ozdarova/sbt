@@ -2,7 +2,6 @@ package entity;
 
 import org.infinispan.commons.marshall.Externalizer;
 import org.infinispan.commons.marshall.SerializeWith;
-import org.infinispan.distribution.group.Grouper;
 
 import java.io.IOException;
 import java.io.ObjectInput;

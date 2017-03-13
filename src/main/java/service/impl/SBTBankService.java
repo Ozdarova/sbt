@@ -108,6 +108,13 @@ public class SBTBankService implements BankService, Runnable {
         paymentProvider.remove(payment);
     }
 
+    @Override
+    public List<Account> getAccounts() {
+        return accountProvider.getAll().stream()
+                .filter((a) -> a.getBankId() == this.bankInfo.getId())
+                .collect(Collectors.toList());
+    }
+
     public void processLocalPayment(Payment payment) {
         Account fromAccount = accountProvider.getById(payment.getFrom());
         Account toAccount = accountProvider.getById(payment.getTo());
